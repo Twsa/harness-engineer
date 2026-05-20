@@ -1,0 +1,1177 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  	<head>
+        <meta charset="utf-8" />
+        
+        <title>
+            
+            Developer’s Guide to AI Agent Protocols
+            
+            
+            - Google Developers Blog
+            
+        </title>
+        <meta property="og:title" content="Developer’s Guide to AI Agent Protocols- Google Developers Blog" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        
+	<meta name="description" content="This blog post explores how six key protocols, including MCP and A2A, simplify AI agent development by replacing custom integration code with standardized communication patterns. Learn how to use the Agent Development Kit (ADK) to build complex agents capable of managing real-time inventory, secure commerce via UCP/AP2, and interactive streaming interfaces. Discover how adopting these architectural standards creates more scalable, interoperable, and user-friendly AI solutions." />
+  <meta content="summary_large_image" name="twitter:card"/>
+  <meta content="Google for Developers Blog - News about Web, Mobile, AI and Cloud" property="twitter:title"/>
+  <meta property="og:title" content="Developer’s Guide to AI Agent Protocols" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [{
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Google for Developers Blog",
+      "item": "https://developers.googleblog.com/"
+    },{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Developer’s Guide to AI Agent Protocols",
+      "item": "https://developers.googleblog.com/en/developers-guide-to-ai-agent-protocols/"
+    }]
+  }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Developer’s Guide to AI Agent Protocols",
+      "description": "This blog post introduces a suite of six protocols, such as MCP and A2A, designed to eliminate custom integration code by standardizing how AI agents access data and communicate. Using a &quot;kitchen manager&quot; agent as a practical example, it demonstrates how these tools handle complex tasks like real-time inventory checks, wholesale commerce via UCP, and secure payment authorization through AP2. By leveraging the Agent Development Kit (ADK), developers can also implement A2UI and AG-UI to deliver interactive dashboards and seamless streaming interfaces to users.",
+      "image": "https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/agent_protocol_banner.2e16d0ba.fill-800x400.png",
+      "datePublished": "2026-03-18",
+      "author": [
+        
+        
+          { "@type": "Person", "name": "Shubham Saboo", "url": "/en/search/?author=Shubham+Saboo" },
+        
+          { "@type": "Person", "name": "Kristopher Overholt", "url": "/en/search/?author=Kristopher+Overholt" }
+        
+        
+      ]
+    }
+  </script>
+  
+  <meta content="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/Gemini_Generated_Image_kad1omkad1.2e16d0ba.fill-1200x600.jpg" property="og:image"/>
+  
+
+
+        
+        
+
+        <!-- Google Tag Manager -->
+        <script type="text/javascript" nonce="Cy2haREoby1D78LJvUmr2w==" src="https://storage.googleapis.com/gweb-developer-goog-blog-cms-assets/site/20260519-162827/js/analytics.js"></script>
+        <!-- End Google Tag Manager -->
+
+        
+        <link href="//www.gstatic.com/glue/v27_1/glue.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="https://storage.googleapis.com/gweb-developer-goog-blog-cms-assets/site/20260519-162827/css/dgc_blog.css">
+        <link rel="icon" href="https://storage.googleapis.com/gweb-developer-goog-blog-assets/meta/favicon.ico" type="image/x-icon">
+        <link rel="apple-touch-icon" href="https://storage.googleapis.com/gweb-developer-goog-blog-assets/meta/apple-touch-icon.png">
+
+        
+				<link rel="preconnect" href="https://fonts.googleapis.com">
+				<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+				<link rel="preload" href="https://fonts.googleapis.com/css2?family=Product+Sans&family=Google+Sans+Display:ital@0;1&family=Google+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Google+Sans+Text:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap" as="style">
+				<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Product+Sans&family=Google+Sans+Display:ital@0;1&family=Google+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Google+Sans+Text:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap">
+        <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght,MONO@0,300..800,1;1,300..800,1&amp;family=Google+Sans+Flex:opsz,wght@6..144,1..1000&amp;display=swap" rel="stylesheet" data-page-link="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap">
+
+        
+        <link href="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.css" rel="stylesheet">
+
+        
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="https://storage.googleapis.com/gweb-developer-goog-blog-cms-assets/site/20260519-162827/css/blog_detail.css"
+  />
+  <link type="text/css" href="https://storage.googleapis.com/gweb-developer-goog-blog-cms-assets/site/20260519-162827/css/prism.css" rel="stylesheet" />
+
+    </head>
+
+    <body id="main-content" class="glue-body ">
+        <!-- Google Tag Manager (noscript) -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WVTLDSL "
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
+
+        
+
+				
+        
+
+<!-- HTML -->
+<header class="dgc-header">
+  <div class="dgc-header-inner">
+    <button class="hamburger" aria-haspopup="true" aria-expanded="false" aria-label="Open Menu">
+      <svg role="presentation" aria-hidden="true" class="glue-icon">
+        <use href="/glue-icon/#menu"></use>
+      </svg>
+    </button>
+    <div class="product-name-wrapper">
+      <a href="https://developers.google.com/" class="site-logo-link" data-label="Site logo">
+        <img src="https://storage.googleapis.com/gweb-developer-goog-blog-cms-assets/site/20260519-162827/images/g-dev.svg" class="site-logo" alt="Google for Developers">
+      </a>
+    </div>
+    <div class="desktop-nav-wrapper">
+      <div class="upper-tabs-wrapper">
+        <div class="upper-tabs">
+          <nav class="tabs" aria-label="Upper Tabs">
+            <div class="tab">
+              <a
+                href="//developers.google.com/community"
+                class="top-nav-title">
+                Community/Events
+              </a>
+            </div>
+            <div class="tab">
+              <a
+                href="//developers.google.com/solutions/catalog"
+                class="top-nav-title">
+                Learn
+              </a>
+            </div>
+            <div class="tab">
+              <a
+                href="//developers.googleblog.com"
+                class="top-nav-title">
+                Blog
+              </a>
+            </div>
+            <div class="tab">
+              <a
+                href="https://www.youtube.com/user/GoogleDevelopers"
+                class="top-nav-title">
+                YouTube
+              </a>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="dgc-header-search">
+    <div class="search-wrapper glue-page">
+      <div class="glue-grid">
+        <form id="search-form"  action="/en/search/" method="get" class="search-content glue-grid__col glue-grid__col--span-4-sm glue-grid__col--span-9-md glue-grid__col--span-7-lg">
+          <div class="search-input-wrapper">
+            <svg role="presentation" aria-hidden="true" class="glue-icon search-icon">
+              <use href="/glue-icon/#search"></use>
+            </svg>
+            <input
+              type="text"
+              name="query"
+              
+              placeholder="Search all articles..."
+              aria-label="Search"
+              class="search-input-field"
+            />
+          </div>
+          <button class="glue-button glue-button--high-emphasis">
+            Search
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-drawer" top-level-nav>
+  <nav class="nav-content" aria-label="Side menu">
+    <div class="mobile-header">
+      <button class="nav-close-btn nav-btn" aria-label="Close navigation">
+        <svg role="presentation" aria-hidden="true" class="glue-icon">
+          <use href="/glue-icon/#close"></use>
+        </svg>
+      </button>
+      <button class="nav-back-btn nav-btn hidden" aria-label="Back to Menu">
+        <svg role="presentation" aria-hidden="true" class="glue-icon">
+          <use href="/glue-icon/#arrow-back"></use>
+        </svg>
+      </button>
+      <div class="product-name-wrapper">
+        <a href="https://developers.google.com/" class="site-logo-link" data-label="Site logo">
+          <img src="https://storage.googleapis.com/gweb-developer-goog-blog-cms-assets/site/20260519-162827/images/g-dev.svg" class="site-logo" alt="Google for Developers">
+        </a>
+      </div>
+    </div>
+    <div class="nav-wrapper">
+      <div class="mobile-nav-top">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="//developers.google.com/community" class="nav-title" data-label="Tab: Community/Events">
+              <span class="nav-text" tooltip="">
+                Community/Events
+             </span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="//developers.google.com/solutions/catalog" class="nav-title" data-label="Tab: Learn">
+              <span class="nav-text" tooltip="">
+                Learn
+             </span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="//developers.googleblog.com" class="nav-title" data-label="Tab: Blog">
+              <span class="nav-text" tooltip="">
+                Blog
+             </span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="https://www.youtube.com/user/GoogleDevelopers" class="nav-title" data-label="Tab: YouTube">
+              <span class="nav-text" tooltip="">
+                YouTube
+             </span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<div class="backdrop"></div>
+
+        
+  <div class="blog-detail-container">
+
+    
+      <section class="tags-container glue-page glue-spacer-5-top">
+        <div class="glue-eyebrow"></div>
+      </section>
+    
+
+    <section class="heading-container glue-page  glue-spacer-1-top">
+      <h1 class="glue-headline glue-headline--headline-1">Developer’s Guide to AI Agent Protocols</h1>
+    </section>
+
+    <section class="summary-container glue-page glue-spacer-4-top">
+      <div class="date-time">
+        <div class="published-date glue-font-weight-medium">MARCH 18, 2026</div>
+      </div>
+    </section>
+
+    <section class="glue-page glue-grid glue-spacer-1-top">
+
+      <section class="author-container glue-grid__col glue-grid__col--span-4-sm glue-grid__col--span-10-md">
+      
+        
+          <div class="author-obj">
+            <a class="glue-font-weight-medium" href="/en/search/?author=Shubham+Saboo">Shubham Saboo</a>
+            
+              <span class="glue-font-weight-medium role">Senior AI Product Manager</span>
+            
+            
+          </div>
+        
+          <div class="author-obj">
+            <a class="glue-font-weight-medium" href="/en/search/?author=Kristopher+Overholt">Kristopher Overholt</a>
+            
+              <span class="glue-font-weight-medium role">Developer Relations Engineer</span>
+            
+            
+          </div>
+        
+
+      
+      </section>
+      <section class="social-container glue-grid__col glue-grid__col--span-4-sm glue-grid__col--span-2-md">
+        <button id="social-button" class="glue-button glue-button--low-emphasis glue-button--icon" aria-haspopup="true" aria-expanded="false">
+          <svg role="presentation" aria-hidden="true" class="glue-icon">
+            <use href="/glue-icon/#share"></use>
+          </svg>
+          <span>Share</span>
+        </button>
+        <ul id="social-menu" class="glue-elevation-level-1" role="menu" aria-labelledby="social-button">
+          <li>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={url}"
+                title="Share on Facebook" target="_blank" rel="noopener">
+              <svg role="presentation" aria-hidden="true"
+                  class="glue-icon glue-icon--social glue-icon--32px">
+                <use href="/glue-icon/#post-facebook"></use>
+              </svg>
+              <span>Facebook</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/intent/tweet?text={url}"
+                title="Share on Twitter" target="_blank" rel="noopener">
+              <svg role="presentation" aria-hidden="true"
+                  class="glue-icon glue-icon--social glue-icon--32px">
+                <use href="/glue-icon/#twitter-x"></use>
+              </svg>
+              <span>Twitter</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/shareArticle?url={url}&amp;mini=true" title="Share on LinkedIn" target="_blank" rel="noopener">
+              <svg role="presentation" aria-hidden="true"
+                  class="glue-icon glue-icon--social glue-icon--32px">
+                <use href="/glue-icon/#post-linkedin"></use>
+              </svg>
+              <span>LinkedIn</span>
+            </a>
+          </li>
+          <li>
+            <a href="mailto:name@example.com?subject=Check%20out%20this%20site&body=Check%20out%20{url}" title="Send via Email">
+              <svg role="presentation" aria-hidden="true"
+                  class="glue-icon glue-icon--social glue-icon--32px">
+                <use href="/glue-icon/#email"></use>
+              </svg>
+              <span>Mail</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" title="Get shareable link" data-link="" data-copy-text="Copy Link" data-copied-text="Copied!">
+              <svg role="presentation" aria-hidden="true"
+                  class="glue-icon glue-icon--social glue-icon--32px">
+                <use href="/glue-icon/#link"></use>
+              </svg>
+              <span></span>
+            </a>
+          </li>
+        </ul>
+      </section>
+    </section>
+
+    
+    <section class="blocks-container glue-page glue-spacer-3-top">
+      <div class="block">
+          
+
+<img
+    class="banner-image"
+    src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/agent_protocol_banner.original.png"
+    alt="agent_protocol_banner"
+/>  <div class="inner-block-content rich-content">
+    <p data-block-key="r26o2">The growing landscape of AI agent development is overloaded with acronyms: MCP, A2A, UCP, AP2, A2UI, and AG-UI, just to name a few. If you’ve ever looked at this list of protocols and felt like you were staring at a wall of competing standards, you are not alone. To help you understand their value, we are going to demonstrate what each one does to save you from writing and maintaining custom integration code for every single tool, API, and frontend component your agent touches.</p><p data-block-key="3178o">We will put these protocols into practice by using Agent Development Kit (ADK) to build a multi-step supply chain agent for a restaurant. This scenario works well as a test case because ordering wholesale ingredients requires checking inventory databases, communicating with remote supplier agents, executing secure transactions, and rendering interactive dashboards.</p><p data-block-key="21c8n">We&#x27;ll start with a bare LLM that hallucinates everything, then add protocols one by one until it can check real inventory, get specialist quotes, place orders, authorize payments, and render interactive, streaming dashboards.</p><h3 data-block-key="jjj7n" id="1.-model-context-protocol-(mcp)"><b>1. Model Context Protocol (MCP)</b></h3><p data-block-key="2lopd">Let’s look at the first hurdle you hit when building an agent: connecting it to your systems and your data. If your kitchen manager agent needs to check inventory or email a supplier, you would normally have to write custom integration code for that specific API. If a service has a dozen endpoints, you&#x27;re writing and maintaining a dozen custom tools just for that service.</p><p data-block-key="fmfg3">The <a href="https://modelcontextprotocol.io/"><b>Model Context Protocol (MCP)</b></a> eliminates this busywork by giving you a single standard connection pattern for hundreds of servers. Servers advertise their tools, and your agent discovers them automatically. And because the MCP servers are maintained by the teams who built those systems, your agent always gets the latest tool definitions without you writing or updating any integration code.</p>
+</div>   
+
+
+    
+    <div class="inner-block-content">
+        <div class="image-wrapper">
+            
+                <img
+                    class="regular-image"
+                    src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/diagram-1-mcp.original.png"
+                    alt="diagram-1-mcp"
+                />
+            
+            
+        </div>
+    </div>
+  <div class="inner-block-content rich-content">
+    <p data-block-key="r26o2">ADK provides first-class support for this via <a href="https://google.github.io/adk-docs/mcp/">McpToolset</a>. Instead of writing a bunch of API requests from scratch, our kitchen manager can now read from a real PostgreSQL database using the <a href="https://google.github.io/adk-docs/integrations/mcp-toolbox-for-databases/">MCP Toolbox for Databases</a>, look up recipes via the <a href="https://google.github.io/adk-docs/integrations/notion/">Notion MCP</a>, and take action by emailing suppliers using the <a href="https://google.github.io/adk-docs/integrations/mailgun/">Mailgun MCP</a>.</p>
+</div>  <div class="inner-block-content code-block line-numbers">
+    <pre><code class="language-python">from google.adk.agents import Agent
+from google.adk.tools.mcp_tool import McpToolset
+from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
+from google.adk.tools.toolbox_toolset import ToolboxToolset
+from mcp import StdioServerParameters
+
+# 1. Inventory database - MCP Toolbox for Databases (PostgreSQL, SQLite, BigQuery, etc.)
+inventory_tools = ToolboxToolset(server_url=TOOLBOX_URL)
+
+# 2. Kitchen SOPs and recipes - Notion MCP (read menus, ingredient lists, supplier contacts)
+notion_tools = McpToolset(connection_params=StdioConnectionParams(
+    server_params=StdioServerParameters(
+        command=&quot;npx&quot;, args=[&quot;-y&quot;, &quot;@notionhq/notion-mcp-server&quot;],
+        env={&quot;NOTION_TOKEN&quot;: NOTION_TOKEN}),
+    timeout=30))
+
+# 3. Email suppliers about orders - Mailgun MCP (send confirmations, track delivery)
+mailgun_tools = McpToolset(connection_params=StdioConnectionParams(
+    server_params=StdioServerParameters(
+        command=&quot;npx&quot;, args=[&quot;-y&quot;, &quot;@mailgun/mcp-server&quot;],
+        env={&quot;MAILGUN_API_KEY&quot;: MAILGUN_API_KEY}),
+    timeout=30))
+
+kitchen_agent = Agent(
+    model=&quot;gemini-3-flash-preview&quot;,
+    name=&quot;kitchen_manager&quot;,
+    instruction=&quot;You manage a restaurant kitchen. Check inventory, look up recipes, email suppliers.&quot;,
+    tools=[inventory_tools, notion_tools, mailgun_tools],
+)</code></pre>
+    <div class="language-block glue-font-weight-medium">
+        Python
+    </div>
+    <div class="copy-code-block">
+        <span class="hidden">Copied</span>
+        <button class="copy-clipboard">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#202124"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>
+        </button>
+    </div>
+    <div class="dark-mode-block">
+        <button class="dark-mode-toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#202124"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
+        </button>
+    </div>
+    
+</div>  <div class="inner-block-content rich-content">
+    <p data-block-key="r26o2">You can browse the full ecosystem of <a href="https://google.github.io/adk-docs/integrations/?topic=mcp">MCP integrations in ADK</a> to see what&#x27;s available.</p><h3 data-block-key="h85ug" id="2.-agent2agent-protocol-(a2a)"><b>2. Agent2Agent Protocol (A2A)</b></h3><p data-block-key="72hf8">With MCP handling data access, the next challenge is expertise. Your kitchen manager can check inventory, but it doesn&#x27;t know today&#x27;s wholesale prices, supplier quality grades, or delivery windows. That knowledge lives with different remote agents, potentially built by different teams, on different frameworks, running on different servers. In some cases, the raw data might never be exposed by API but could be exposed via an agentic interface. Without a standard protocol, you&#x27;d have to write and maintain custom integration code for each one, and redeploy every time a remote agent changes.</p><p data-block-key="elmbg">The <a href="https://a2a-protocol.org/">Agent2Agent (A2A) protocol</a> standardizes how agents discover and communicate with each other. Each A2A agent publishes an Agent Card at a well-known URL (<code>/.well-known/agent-card.json</code>) that describes its name, capabilities, and endpoint. See the <a href="https://a2a-protocol.org/latest/specification/">A2A protocol docs</a> for the full specification.</p>
+</div>   
+
+
+    
+    <div class="inner-block-content">
+        <div class="image-wrapper">
+            
+                <img
+                    class="regular-image"
+                    src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/diagram-2-a2a.original.png"
+                    alt="diagram-2-a2a"
+                />
+            
+            
+        </div>
+    </div>
+  <div class="inner-block-content rich-content">
+    <p data-block-key="r26o2">Our kitchen manager agent fetches these cards to learn what each remote agent does, then routes queries to the right one at runtime. Adding a new remote agent is as simple as adding a new URL, eliminating the need for manual code change or re-deployments.</p><p data-block-key="b2lok">ADK’s <code>RemoteA2aAgent</code> routes to one remote agent per turn. When a query spans multiple remote agents, such as checking price, quality, and delivery at once, you can use the <code>a2a-sdk</code> directly, which is the approach we use here.</p>
+</div>  <div class="inner-block-content code-block line-numbers">
+    <pre><code class="language-python"># An A2A agent serves an Agent Card at /.well-known/agent-card.json:
+# {
+#   &quot;name&quot;: &quot;pricing_agent&quot;,
+#   &quot;description&quot;: &quot;Checks today&#x27;s wholesale market prices for food items.&quot;,
+#   &quot;skills&quot;: [{&quot;id&quot;: &quot;pricing&quot;, &quot;name&quot;: &quot;Price Check&quot;,
+#               &quot;description&quot;: &quot;Check current wholesale market prices&quot;}],
+#   &quot;url&quot;: &quot;http://pricing-agent:8001/&quot;,
+#   &quot;version&quot;: &quot;1.0.0&quot;
+# }
+
+# EXPOSE: Turn any ADK agent into an A2A service
+from google.adk.a2a.utils.agent_to_a2a import to_a2a
+app = to_a2a(pricing_agent, port=8001)
+
+# DISCOVER: Resolve the Agent Card and create a client - just a URL
+from a2a.client.client_factory import ClientFactory
+client = await ClientFactory.connect(&quot;http://pricing-agent:8001&quot;)
+card = await client.get_card()
+print(f&quot;{card.name} - {card.description}&quot;)
+# -&gt; &quot;pricing_agent - Checks today&#x27;s wholesale market prices for food items.&quot;
+
+# CALL: Send a message via the A2A protocol
+from a2a.client.helpers import create_text_message_object
+msg = create_text_message_object(content=&quot;What&#x27;s today&#x27;s wholesale price for salmon?&quot;)
+async for response in client.send_message(msg):
+    ...  # response is a Task (with artifacts) or a direct Message</code></pre>
+    <div class="language-block glue-font-weight-medium">
+        Python
+    </div>
+    <div class="copy-code-block">
+        <span class="hidden">Copied</span>
+        <button class="copy-clipboard">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#202124"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>
+        </button>
+    </div>
+    <div class="dark-mode-block">
+        <button class="dark-mode-toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#202124"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
+        </button>
+    </div>
+    
+</div>  <div class="inner-block-content rich-content">
+    <p data-block-key="r26o2">Try the <a href="https://github.com/a2aproject/a2a-samples">A2A samples</a> to see discovery and communication patterns in action.</p><h3 data-block-key="8943z" id="3.-universal-commerce-protocol-(ucp)"><b>3. Universal Commerce Protocol (UCP)</b></h3><p data-block-key="fnfr7">Your agent can now discover suppliers and get quotes. But when it&#x27;s time to actually place an order, every supplier has a different API. If your agent needs to source ingredients from five wholesale distributors, you&#x27;re integrating five different checkout flows.</p><p data-block-key="epj2s">The <a href="https://ucp.dev/">Universal Commerce Protocol (UCP)</a> standardizes the shopping lifecycle into modular capabilities through strongly typed request and response schemas that remain consistent across any underlying transport. Instead of building custom integrations for every supplier, your agent interacts with them through a unified pattern. This remains true whether the connection is established via REST, Model Context Protocol (MCP), Agent2Agent (A2A), or Embedded Protocols (EP) for browser-based flows.</p>
+</div>   
+
+
+    
+    <div class="inner-block-content">
+        <div class="image-wrapper">
+            
+                <img
+                    class="regular-image"
+                    src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/diagram-3-ucp.original.png"
+                    alt="diagram-3-ucp"
+                />
+            
+            
+        </div>
+    </div>
+  <div class="inner-block-content rich-content">
+    <p data-block-key="r26o2">Our kitchen manager agent can discover a supplier&#x27;s catalog using the same well-known URL pattern we saw in A2A (<code>/.well-known/ucp</code>), then construct a typed checkout request and complete the order. Because UCP also supports standard REST API, it works with whatever HTTP client your project already uses. No proprietary SDK required.</p>
+</div>  <div class="inner-block-content code-block line-numbers">
+    <pre><code class="language-python">import httpx, uuid
+from ucp_sdk.models.discovery.profile_schema import UcpDiscoveryProfile
+from ucp_sdk.models.schemas.shopping.checkout_create_req import CheckoutCreateRequest
+from ucp_sdk.models.schemas.shopping.types.line_item_create_req import LineItemCreateRequest
+from ucp_sdk.models.schemas.shopping.types.item_create_req import ItemCreateRequest
+from ucp_sdk.models.schemas.shopping.payment_create_req import PaymentCreateRequest
+
+# DISCOVER: Parse the supplier&#x27;s UCP profile
+async with httpx.AsyncClient() as c:
+    profile = UcpDiscoveryProfile.model_validate(
+        (await c.get(&quot;http://example-wholesale:8182/.well-known/ucp&quot;)).json())
+
+# ORDER: Build a typed checkout request
+checkout_req = CheckoutCreateRequest(
+    currency=&quot;USD&quot;,
+    line_items=[
+        LineItemCreateRequest(quantity=10, item=ItemCreateRequest(id=&quot;salmon&quot;)),
+        LineItemCreateRequest(quantity=3,  item=ItemCreateRequest(id=&quot;olive_oil&quot;)),
+    ],
+    payment=PaymentCreateRequest(),
+)
+
+# SEND: Create checkout + complete (with required UCP headers)
+# UCP-Agent header should point to your agent&#x27;s capability profile
+headers = {&quot;UCP-Agent&quot;: &#x27;profile=&quot;https://kitchen.example/agent&quot;&#x27;,
+           &quot;Idempotency-Key&quot;: str(uuid.uuid4()), &quot;Request-Id&quot;: str(uuid.uuid4())}
+async with httpx.AsyncClient() as c:
+    checkout = (await c.post(&quot;http://example-wholesale:8182/checkout-sessions&quot;,
+        json=checkout_req.model_dump(mode=&quot;json&quot;, by_alias=True, exclude_none=True),
+        headers=headers)).json()
+    headers[&quot;Idempotency-Key&quot;] = str(uuid.uuid4())  # New Idempotency-Key per operation
+    order = (await c.post(
+        f&quot;http://example-wholesale:8182/checkout-sessions/{checkout[&#x27;id&#x27;]}/complete&quot;,
+        headers=headers)).json()</code></pre>
+    <div class="language-block glue-font-weight-medium">
+        Python
+    </div>
+    <div class="copy-code-block">
+        <span class="hidden">Copied</span>
+        <button class="copy-clipboard">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#202124"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>
+        </button>
+    </div>
+    <div class="dark-mode-block">
+        <button class="dark-mode-toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#202124"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
+        </button>
+    </div>
+    
+</div>  <div class="inner-block-content rich-content">
+    <p data-block-key="r26o2">The UCP samples repository includes an <a href="https://github.com/Universal-Commerce-Protocol/samples/tree/main/a2a">AI-powered shopping assistant</a> built with ADK that combines UCP with A2A for end-to-end shopping workflows.</p><h3 data-block-key="o8yms" id="4.-agent-payments-protocol-(ap2)"><b>4. Agent Payments Protocol (AP2)</b></h3><p data-block-key="2qujc">In the previous section, our kitchen manager gained the ability to place orders with suppliers. But who authorized that spending? There&#x27;s no record of what limits were set, which merchants are approved, or when the authorization expires.</p><p data-block-key="428ns">The Agent Payments Protocol (AP2) adds that missing layer with typed mandates that provide non-repudiatable proof of intent and enforce configurable guardrails on every transaction. UCP handles what you order and who you order from, whereas AP2 handles who approved the purchase and provides the audit trail. They work together: AP2 plugs into UCP as an extension, adding cryptographic proof of authorization to the checkout flow.</p><p data-block-key="6uhah">Instead of an uncontrolled transaction, you configure guardrails for your agent to follow. You define an <code>IntentMandate</code> to specify allowed merchants and set a spending limit for auto-approval. The agent then generates a <code>PaymentMandate</code> bound to a specific cart and amount. If the order exceeds the limit, the mandate remains unsigned until a manager explicitly approves it. A <code>PaymentReceipt</code> closes the audit trail.</p>
+</div>   
+
+
+    
+    <div class="inner-block-content">
+        <div class="image-wrapper">
+            
+                <img
+                    class="regular-image"
+                    src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/diagram-4-ap2.original.png"
+                    alt="diagram-4-ap2"
+                />
+            
+            
+        </div>
+    </div>
+  <div class="inner-block-content rich-content">
+    <p data-block-key="r26o2">The following code snippet uses real AP2 types from the official repo to show the full authorization flow, from intent through signed mandate to receipt.</p>
+</div>  <div class="inner-block-content code-block line-numbers">
+    <pre><code class="language-python">from ap2.types.mandate import IntentMandate, PaymentMandate, PaymentMandateContents
+from ap2.types.payment_request import PaymentCurrencyAmount, PaymentItem, PaymentResponse
+from ap2.types.payment_receipt import PaymentReceipt, Success
+
+# The restaurant owner configures guardrails
+intent = IntentMandate(
+    natural_language_description=&quot;10 lbs salmon, 3 bottles olive oil&quot;,
+    merchants=[&quot;Example Wholesale&quot;],    # ONLY these suppliers
+    requires_refundability=True,            # must be refundable
+    user_cart_confirmation_required=False,  # auto-approve under limit
+    intent_expiry=&quot;2026-02-23T20:00:00Z&quot;,   # expires in 1 hour
+)
+
+# Agent creates a PaymentMandate binding payment to the intent
+mandate = PaymentMandate(payment_mandate_contents=PaymentMandateContents(
+    payment_mandate_id=&quot;abc123&quot;,
+    payment_details_id=&quot;order-001&quot;,
+    payment_details_total=PaymentItem(
+        label=&quot;10 lbs salmon + 3 bottles olive oil&quot;,
+        amount=PaymentCurrencyAmount(currency=&quot;USD&quot;, value=294.00)),
+    payment_response=PaymentResponse(request_id=&quot;order-001&quot;, method_name=&quot;CARD&quot;),
+    merchant_agent=&quot;Example Wholesale&quot;,
+))
+
+# Manager signs (simulated - real AP2 uses JWT/biometric on secure device)
+mandate.user_authorization = &quot;signed_hash_abc123&quot;
+
+# PaymentReceipt closes the audit trail
+receipt = PaymentReceipt(
+    payment_mandate_id=&quot;abc123&quot;, payment_id=&quot;PAY-001&quot;,
+    amount=PaymentCurrencyAmount(currency=&quot;USD&quot;, value=294.00),
+    payment_status=Success(merchant_confirmation_id=&quot;ORD-A1B2C3&quot;),
+)
+# IntentMandate -&gt; PaymentMandate (signed) -&gt; PaymentReceipt
+# Full audit trail: what was intended, authorized, and paid</code></pre>
+    <div class="language-block glue-font-weight-medium">
+        Python
+    </div>
+    <div class="copy-code-block">
+        <span class="hidden">Copied</span>
+        <button class="copy-clipboard">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#202124"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>
+        </button>
+    </div>
+    <div class="dark-mode-block">
+        <button class="dark-mode-toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#202124"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
+        </button>
+    </div>
+    
+</div>  <div class="inner-block-content rich-content">
+    <p data-block-key="r26o2">AP2 is in v0.1 and its types are provided as a separate package, not built into ADK core. Explore the protocol and reference implementation in the <a href="https://github.com/google-agentic-commerce/AP2">AP2 repo</a>.</p><h3 data-block-key="v66cb" id="5.-agent-to-user-interface-protocol-(a2ui)"><b>5. Agent-to-User Interface Protocol (A2UI)</b></h3><p data-block-key="849rt">At this point, our kitchen manager can check inventory, get quotes, place orders, and authorize payments. But every result comes back as plain text and sometimes text isn&#x27;t enough. When your agent needs to present an inventory dashboard, an order form, or a supplier comparison, you&#x27;d normally have to build a separate frontend component for each one. Every new UI requirement means more frontend code to write and maintain.</p><p data-block-key="4jfb8">The <a href="https://a2ui.org/">Agent-to-User Interface Protocol (A2UI)</a> solves this by letting the agent dynamically compose novel layouts from a fixed catalog. It uses a declarative JSON format made up of just 18 safe component primitives, such as rows, columns, and text fields.</p>
+</div>   
+
+
+    
+    <div class="inner-block-content">
+        <div class="image-wrapper">
+            
+                <img
+                    class="regular-image"
+                    src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/diagram-5-a2ui.original.png"
+                    alt="diagram-5-a2ui"
+                />
+            
+            
+        </div>
+    </div>
+  <div class="inner-block-content rich-content">
+    <p data-block-key="r26o2">A2UI separates the UI structure from the underlying data. The agent sends a flat list of components referencing each other by ID, followed by a separate data payload. A renderer on the client side turns this JSON into native UI using frameworks like Lit, Flutter, or Angular.</p>
+</div>  <div class="inner-block-content code-block line-numbers">
+    <pre><code class="language-python"># This is what the agent sends. A renderer (Lit, Flutter, Angular) turns it into native UI.
+
+a2ui_messages = [
+    # 1. Create a rendering surface
+    {&quot;beginRendering&quot;: {&quot;surfaceId&quot;: &quot;default&quot;, &quot;root&quot;: &quot;card&quot;}},
+
+    # 2. Send the component tree (flat list, ID references - not nested)
+    {&quot;surfaceUpdate&quot;: {&quot;surfaceId&quot;: &quot;default&quot;, &quot;components&quot;: [
+        {&quot;id&quot;: &quot;card&quot;, &quot;component&quot;: {&quot;Card&quot;: {&quot;child&quot;: &quot;col&quot;}}},
+        {&quot;id&quot;: &quot;col&quot;, &quot;component&quot;: {&quot;Column&quot;: {&quot;children&quot;: {&quot;explicitList&quot;: [&quot;title&quot;, &quot;price&quot;, &quot;buy&quot;]}}}},
+        {&quot;id&quot;: &quot;title&quot;, &quot;component&quot;: {&quot;Text&quot;: {&quot;usageHint&quot;: &quot;h3&quot;, &quot;text&quot;: {&quot;path&quot;: &quot;name&quot;}}}},
+        {&quot;id&quot;: &quot;price&quot;, &quot;component&quot;: {&quot;Text&quot;: {&quot;text&quot;: {&quot;path&quot;: &quot;price&quot;}}}},
+        {&quot;id&quot;: &quot;buy&quot;, &quot;component&quot;: {&quot;Button&quot;: {&quot;child&quot;: &quot;btn-label&quot;, &quot;action&quot;: {&quot;name&quot;: &quot;purchase&quot;,
+            &quot;context&quot;: [{&quot;key&quot;: &quot;item&quot;, &quot;value&quot;: {&quot;path&quot;: &quot;name&quot;}}]}}}},
+        {&quot;id&quot;: &quot;btn-label&quot;, &quot;component&quot;: {&quot;Text&quot;: {&quot;text&quot;: {&quot;literalString&quot;: &quot;Buy Now&quot;}}}},
+    ]}},
+
+    # 3. Send the data (separate from structure - update data without resending components)
+    {&quot;dataModelUpdate&quot;: {&quot;surfaceId&quot;: &quot;default&quot;, &quot;contents&quot;: [
+        {&quot;key&quot;: &quot;name&quot;,  &quot;valueString&quot;: &quot;Fresh Atlantic Salmon&quot;},
+        {&quot;key&quot;: &quot;price&quot;, &quot;valueString&quot;: &quot;$24.00/lb&quot;},
+    ]}},
+]</code></pre>
+    <div class="language-block glue-font-weight-medium">
+        Python
+    </div>
+    <div class="copy-code-block">
+        <span class="hidden">Copied</span>
+        <button class="copy-clipboard">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#202124"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>
+        </button>
+    </div>
+    <div class="dark-mode-block">
+        <button class="dark-mode-toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#202124"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
+        </button>
+    </div>
+    
+</div>  <div class="inner-block-content rich-content">
+    <p data-block-key="r26o2">Now the agent can compose completely different interfaces from the same 18 primitives depending on the request. Here, three prompts to the same agent produce an inventory checklist, an order form, and a supplier comparison, all built from components like <code>CheckBox</code>, <code>TextField</code>, <code>DateTimeInput</code>, and <code>Card</code>, with no additional frontend code.</p>
+</div>   
+
+
+    
+    <div class="inner-block-content">
+        <div class="image-wrapper">
+            
+                <img
+                    class="regular-image"
+                    src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/widgets-a2ui.original.png"
+                    alt="widgets-a2ui"
+                />
+            
+            
+        </div>
+    </div>
+  <div class="inner-block-content rich-content">
+    <p data-block-key="fp8g7">During development, <a href="https://google.github.io/adk-docs/runtime/web-interface/">ADK&#x27;s web interface</a> (<code>adk web</code>) can render A2UI components natively, so you can test your agent&#x27;s UI output without building a custom renderer.</p><p data-block-key="6lf4n">Explore the <a href="https://github.com/google/A2UI/tree/main/samples">A2UI samples</a> for more component patterns, or try the <a href="https://a2ui-composer.ag-ui.com/">A2UI Widget Builder</a> to compose layouts interactively.</p><h3 data-block-key="jw0v5" id="6.-agent-user-interaction-protocol-(ag-ui)"><b>6. Agent-User Interaction Protocol (AG-UI)</b></h3><p data-block-key="esp2d">Traditional REST APIs return a response and they&#x27;re done. Agents are different. They stream text incrementally, call tools in the middle of a response, and sometimes pause to wait for human input. This makes connecting an agent to a frontend more complex than a standard API call.</p><p data-block-key="30g6">You can handle this yourself. ADK provides a native <code>/run_sse</code> endpoint that streams events directly, and a few dozen lines of frontend code is enough to parse the stream and render tool calls. But that parsing code is boilerplate, and it breaks every time the event format changes.</p><p data-block-key="9ogsa">The <a href="https://docs.ag-ui.com/">Agent-User Interaction Protocol (AG-UI)</a> eliminates that boilerplate. It acts as a middleware that translates raw framework events into a standardized SSE stream. Your frontend listens for typed events like <code>TEXT_MESSAGE_CONTENT</code> or <code>TOOL_CALL_START</code> without caring which agent framework produced them.</p>
+</div>   
+
+
+    
+    <div class="inner-block-content">
+        <div class="image-wrapper">
+            
+                <img
+                    class="regular-image"
+                    src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/diagram-6-ag-ui.original.png"
+                    alt="diagram-6-ag-ui"
+                />
+            
+            
+        </div>
+    </div>
+  <div class="inner-block-content rich-content">
+    <p data-block-key="fp8g7">To turn our kitchen manager agent into an AG-UI streaming endpoint, we wrap it with the <code>ag_ui_adk</code> package and mount it to a FastAPI app:</p>
+</div>  <div class="inner-block-content code-block line-numbers">
+    <pre><code class="language-python">from ag_ui_adk import ADKAgent, add_adk_fastapi_endpoint
+from fastapi import FastAPI
+
+# Wrap the agent, create the app, mount the endpoint
+ag_ui_agent = ADKAgent(adk_agent=kitchen_mgr, app_name=&quot;kitchen&quot;, user_id=&quot;chef&quot;)
+app = FastAPI()
+add_adk_fastapi_endpoint(app, ag_ui_agent, path=&quot;/&quot;)
+# Run with: uvicorn module:app
+
+# The SSE stream emits typed events:
+#   RUN_STARTED
+#   TOOL_CALL_START    toolCallName=&quot;check_inventory&quot;
+#   TOOL_CALL_RESULT   content=&quot;3 lbs in stock, REORDER NEEDED&quot;
+#   TOOL_CALL_END
+#   TEXT_MESSAGE_CONTENT  delta=&quot;Based on &quot;
+#   TEXT_MESSAGE_CONTENT  delta=&quot;current inventory...&quot;
+#   RUN_FINISHED</code></pre>
+    <div class="language-block glue-font-weight-medium">
+        Python
+    </div>
+    <div class="copy-code-block">
+        <span class="hidden">Copied</span>
+        <button class="copy-clipboard">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#202124"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>
+        </button>
+    </div>
+    <div class="dark-mode-block">
+        <button class="dark-mode-toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#202124"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
+        </button>
+    </div>
+    
+</div>  <div class="inner-block-content rich-content">
+    <p data-block-key="fp8g7">Explore the <a href="https://www.copilotkit.ai/examples">AG-UI examples</a> to see more streaming patterns in action.</p><h2 data-block-key="umvk5" id="putting-it-all-together:-the-agent-in-action"><b>Putting It All Together: The Agent in Action</b></h2><p data-block-key="3qn55">With all six protocols in place, our bare LLM at the start has become quite a capable agent that can check real inventory, discover suppliers, place orders, authorize payments, and stream interactive dashboards. Here&#x27;s what happens when a user sends a request that invokes all of the agent’s functionality:</p><blockquote data-block-key="c4rnf"><i>&quot;Check our salmon inventory, get today&#x27;s wholesale price and quality grade, and if we&#x27;re low order 10 lbs from Example Wholesale and authorize the payment.&quot;</i></blockquote>
+</div>   
+
+
+    
+    <div class="inner-block-content">
+        <div class="image-wrapper">
+            
+                <img
+                    class="regular-image"
+                    src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/kichen_manager_agent_overall.original.png"
+                    alt="kichen manager agent_overall"
+                />
+            
+            
+        </div>
+    </div>
+  <div class="inner-block-content rich-content">
+    <p data-block-key="cvlj4">The agent handles each stage of the request using a different protocol:</p><p data-block-key="2ulf9"><b>Stage 1: Gather information</b></p><ul><li data-block-key="1bj5p">First, check what&#x27;s in stock. <b>MCP</b> queries the inventory database for salmon (<code>check_inventory</code>).</li><li data-block-key="3bhvt">The stock is low. What&#x27;s the going rate? <b>A2A</b> queries the remote pricing and quality agents (<code>ask_agent</code>).</li></ul><p data-block-key="aceuj"><b>Stage 2: Complete the transaction</b></p><ul><li data-block-key="3durm">The price looks right, place the order. <b>UCP</b> sends a checkout request to Example Wholesale (<code>place_order</code>).</li><li data-block-key="d8gho">But who approved this? <b>AP2</b> secures the order with a payment mandate within configured guardrails (<code>authorize_payment</code>).</li></ul><p data-block-key="efdq7"><b>Stage 3: Present the results</b></p><ul><li data-block-key="6979n">Now show the user what happened. <b>A2UI</b> composes interactive widgets from the results.</li><li data-block-key="2k9dc">Stream it all to the frontend. <b>AG-UI</b> delivers the tool calls and text responses in real time.</li></ul>
+</div>   
+
+<div class="inner-block-content video-block">
+    
+        <video  autoplay="" loop="" muted="" playsinline="" poster="https://storage.googleapis.com/gweb-developer-goog-blog-assets/original_videos/wagtailvideo-zhxab5nq_thumb.jpg">
+<source src='https://storage.googleapis.com/gweb-developer-goog-blog-assets/original_videos/Kitchen-Manager-Agent.mp4' type='video/mp4'>
+<p>Sorry, your browser doesn't support playback for this video</p>
+
+</video>
+    
+    
+</div>  <div class="inner-block-content rich-content">
+    <p data-block-key="fp8g7">Six protocols, each solving a different problem, all working through a single agent.</p><h2 data-block-key="4frx8" id="tips-for-working-with-these-protocols"><b>Tips for working with these protocols</b></h2><p data-block-key="f2a91"><b>Know what problem each protocol solves:</b> MCP connects agents to tools and data. A2A connects agents to other agents. UCP standardizes commerce. AP2 handles payment authorization. A2UI defines what to render. AG-UI defines how to stream it. Understanding these boundaries keeps your architecture clean.</p><p data-block-key="fuf7r"><b>Add protocols as you need them:</b> You don&#x27;t need all six in your agent on day one. Most agents start with MCP for data access. As your requirements grow (multi-agent communication, commerce, payments, rich UI, streaming), bring in the protocol that solves that specific problem.</p><p data-block-key="bmha0"><b>Don’t start from scratch:</b> Before building with a protocol, check for an ADK integration, an official SDK, and sample code. These protocols move fast, and the official tooling handles details you don&#x27;t want to reimplement yourself.</p><p data-block-key="bqmv4"><b>Adopt standards early:</b> These protocols are still maturing, but the patterns they establish (discovery via well-known URLs, typed request/response schemas, standard event streams) make your agent compatible with the growing ecosystem of tools, services, and other agents.</p><h2 data-block-key="wj8d9" id="get-started-now"><b>Get Started Now</b></h2><p data-block-key="b6ggn">Every code sample in this post uses <a href="https://google.github.io/adk-docs/">ADK</a>. Set up your first agent, connect it to an <a href="https://google.github.io/adk-docs/tools-custom/mcp-tools/">MCP</a> server, and start adding protocols from there. Browse the <a href="https://google.github.io/adk-docs/integrations/">ADK Integrations</a> to see what tools and services are already available. Links to each protocol&#x27;s documentation and samples are throughout this guide.</p><p data-block-key="fpcfr">We can’t wait to see what you build.</p>
+</div> 
+      </div>
+    </section>
+    
+
+    <section class="navigation-container glue-page glue-spacer-6-top">
+      <div class="posted-in-section">
+        <div class="posted-in-section__heading">
+          <span class="glue-caption">
+            posted in:
+          </span>
+        </div>
+        <div class="posted-in-section__tags">
+          <ul>
+              
+                  <li>
+                      <a href="/en/search/?technology_categories=AI" class="glue-caption">AI</a>
+                  </li>
+              
+                  <li>
+                      <a href="/en/search/?technology_categories=Cloud" class="glue-caption">Cloud</a>
+                  </li>
+              
+                  <li>
+                      <a href="/en/search/?content_type_categories=Announcements" class="glue-caption">Announcements</a>
+                  </li>
+              
+                  <li>
+                      <a href="/en/search/?content_type_categories=Best+Practices" class="glue-caption">Best Practices</a>
+                  </li>
+              
+              
+                  <li>
+                      <a href="/en/search/?tag=Explore" class="glue-caption">Explore</a>
+                  </li>
+              
+                  <li>
+                      <a href="/en/search/?tag=Influence" class="glue-caption">Influence</a>
+                  </li>
+              
+                  <li>
+                      <a href="/en/search/?tag=Learn" class="glue-caption">Learn</a>
+                  </li>
+              
+          </ul>
+      </div>
+      </div>
+      <div class="buttons-section">
+        <div class="buttons-section__left">
+          <a href="/en/announcing-adk-for-java-100-building-the-future-of-ai-agents-in-java/" class="glue-button--icon glue-elevation-level-1 " aria-label="Previous">
+            <svg role="presentation" aria-hidden="true" class="glue-icon">
+              <use href="/glue-icon/#chevron-left"></use>
+            </svg>
+          </a>
+          <span class="caption ">Previous</span>
+        </div>
+        <div class="buttons-section__right">
+          <span class="caption ">Next</span>
+          <a href="/en/plan-mode-now-available-in-gemini-cli/" class="glue-button--icon glue-elevation-level-1 "  aria-label="Next">
+            <svg role="presentation" aria-hidden="true" class="glue-icon">
+              <use href="/glue-icon/#chevron-right"></use>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="related-posts-container glue-page glue-spacer-6-top glue-spacer-3-bottom">
+      <span class="glue-headline glue-headline--headline-3">Related Posts</span>
+      <div class="related-posts-container__carousel glue-page glue-spacer-5-top">
+        <div class="glue-carousel glue-carousel--cards glue-carousel-related-posts" aria-label="Related Posts">
+          <!-- Previous -->
+          <button class="glue-carousel__button glue-carousel__button--prev"
+              aria-label="Go to the previous slide">
+            <svg role="presentation" aria-hidden="true" class="glue-icon glue-icon--32px">
+              <use href="/glue-icon/#chevron-left"></use>
+            </svg>
+          </button>
+          <!-- Next -->
+          <button class="glue-carousel__button glue-carousel__button--next"
+              aria-label="Go to the next slide">
+            <svg role="presentation" aria-hidden="true" class="glue-icon glue-icon--32px">
+              <use href="/glue-icon/#chevron-right"></use>
+            </svg>
+          </button>
+          <!-- List -->
+          <div class="glue-carousel__viewport">
+            <div class="glue-carousel__list">
+              
+                <a class="glue-card glue-carousel__item" href="/en/an-important-update-transitioning-gemini-cli-to-antigravity-cli/">
+                  <div aria-label="An important update: Transitioning Gemini CLI to Antigravity CLI" class="glue-card__inner">
+                    <picture class="glue-card__asset">
+                      <img alt="An important update: Transitioning Gemini CLI to Antigravity CLI" src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/GeminiCLI-AntigravityCLI_1200x600_.2e16d0ba.fill-800x400.png">
+                    </picture>
+                    <div class="glue-card__content">
+                      <div class="glue-card__tags glue-spacer-2-top">
+                        
+                            
+                            
+                            <span class="glue-label">AI</span>
+                            
+                            
+                            <span class="glue-label">Announcements</span>
+                            
+                            <span class="glue-label">Learn</span>
+                            
+                        
+                      </div>
+                      <p class="glue-headline glue-headline--headline-5">An important update: Transitioning Gemini CLI to Antigravity CLI</p>
+                      <div class="glue-card__cta-custom glue-spacer-3-top">
+                        <span class="glue-cta">MAY 19, 2026</span>
+                        <svg aria-hidden="true" class="glue-icon glue-icon--24px" role="presentation">
+                          <use href="/glue-icon/#arrow-forward"></use>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              
+                <a class="glue-card glue-carousel__item" href="/en/google-tensor-sdk-beta-with-litert/">
+                  <div aria-label="Google Tensor SDK Beta with LiteRT" class="glue-card__inner">
+                    <picture class="glue-card__asset">
+                      <img alt="Google Tensor SDK Beta with LiteRT" src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/images/GoogleForDevelopers-ComboIO-Wagtai.2e16d0ba.fill-800x400_Q9r0CZs.png">
+                    </picture>
+                    <div class="glue-card__content">
+                      <div class="glue-card__tags glue-spacer-2-top">
+                        
+                            
+                            
+                            <span class="glue-label">Mobile</span>
+                            
+                            <span class="glue-label">AI</span>
+                            
+                            
+                            <span class="glue-label">How-To Guides</span>
+                            
+                            <span class="glue-label">Announcements</span>
+                            
+                        
+                      </div>
+                      <p class="glue-headline glue-headline--headline-5">Google Tensor SDK Beta with LiteRT</p>
+                      <div class="glue-card__cta-custom glue-spacer-3-top">
+                        <span class="glue-cta">MAY 19, 2026</span>
+                        <svg aria-hidden="true" class="glue-icon glue-icon--24px" role="presentation">
+                          <use href="/glue-icon/#arrow-forward"></use>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              
+            </div>
+          </div>
+          <!-- Navigation dots -->
+          <div class="glue-carousel__navigation" aria-label="Choose a page"
+               data-glue-carousel-navigation-label="Selected tab $glue_carousel_page_number$ of $glue_carousel_page_total$">
+          </div>
+        </div>
+      </div>
+    </section>
+    
+  </div>
+
+
+				
+				
+
+<div class="footer-linkboxes__wrapper">
+  <nav class="footer-linkboxes" aria-label="Footer links">
+    <ul class="footer-linkboxes__list">
+      <li class="footer-linkbox">
+        <span class="footer-linkbox-heading">
+          Connect
+        </span>
+        <ul class="footer-linkbox-list">
+          
+            <li class="footer-linkbox-list__item">
+              <a href="//googledevelopers.blogspot.com" class="footer-linkbox-list__link">
+                Blog
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="https://goo.gle/3FReQXN" class="footer-linkbox-list__link">
+                Bluesky
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="https://goo.gle/googlefordevs" class="footer-linkbox-list__link">
+                Instagram
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="https://goo.gle/gdevs-li" class="footer-linkbox-list__link">
+                LinkedIn
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="https://goo.gle/gdevs-tw" class="footer-linkbox-list__link">
+                X (Twitter)
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="https://goo.gle/developers" class="footer-linkbox-list__link">
+                YouTube
+              </a>
+            </li>
+          
+        </ul>
+      </li>
+      <li class="footer-linkbox">
+        <span class="footer-linkbox-heading">
+          Programs
+        </span>
+        <ul class="footer-linkbox-list">
+          
+            <li class="footer-linkbox-list__item">
+              <a href="//developers.google.com/program" class="footer-linkbox-list__link">
+                Google Developer Program
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="//developers.google.com/community/gdg" class="footer-linkbox-list__link">
+                Google Developer Groups
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="//developers.google.com/community/experts" class="footer-linkbox-list__link">
+                Google Developer Experts
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="//developers.google.com/community/accelerators" class="footer-linkbox-list__link">
+                Accelerators
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="//www.womentechmakers.com" class="footer-linkbox-list__link">
+                Women Techmakers
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="//developers.google.com/community/nvidia" class="footer-linkbox-list__link">
+                Google Cloud &amp; NVIDIA
+              </a>
+            </li>
+          
+        </ul>
+      </li>
+      <li class="footer-linkbox">
+        <span class="footer-linkbox-heading">
+          Developer consoles
+        </span>
+        <ul class="footer-linkbox-list">
+          
+            <li class="footer-linkbox-list__item">
+              <a href="//console.developers.google.com" class="footer-linkbox-list__link">
+                Google API Console
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="//console.cloud.google.com" class="footer-linkbox-list__link">
+                Google Cloud Platform Console
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="//play.google.com/apps/publish" class="footer-linkbox-list__link">
+                Google Play Console
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="//console.firebase.google.com" class="footer-linkbox-list__link">
+                Firebase Console
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="//console.actions.google.com" class="footer-linkbox-list__link">
+                Actions on Google Console
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="//cast.google.com/publish" class="footer-linkbox-list__link">
+                Cast SDK Developer Console
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="//chrome.google.com/webstore/developer/dashboard" class="footer-linkbox-list__link">
+                Chrome Web Store Dashboard
+              </a>
+            </li>
+          
+            <li class="footer-linkbox-list__item">
+              <a href="//console.home.google.com/" class="footer-linkbox-list__link">
+                Google Home Developer Console
+              </a>
+            </li>
+          
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div class="footer-utility__wrapper">
+  <div>
+    <nav class="footer-sites" aria-label="Other Google Developers websites">
+      <a href="https://developers.google.com/" class="site-logo-link" data-label="Site logo">
+        <img src="https://storage.googleapis.com/gweb-developer-goog-blog-cms-assets/site/20260519-162827/images/g-dev.svg" class="site-logo" alt="Google for Developers">
+      </a>
+      <ul class="footer-sites-list">
+        <li class="footer-sites-item">
+          <a href="//developer.android.com" class="footer-sites-link">
+            Android
+          </a>
+        </li>
+        <li class="footer-sites-item">
+          <a href="//developer.chrome.com/home" class="footer-sites-link">
+            Chrome
+          </a>
+        </li>
+        <li class="footer-sites-item">
+          <a href="//firebase.google.com" class="footer-sites-link">
+            Firebase
+          </a>
+        </li>
+        <li class="footer-sites-item">
+          <a href="//cloud.google.com" class="footer-sites-link">
+            Google Cloud Platform
+          </a>
+        </li>
+        <li class="footer-sites-item">
+          <a href="//developers.google.com/products" class="footer-sites-link">
+            All products
+          </a>
+        </li>
+        <li class="footer-sites-item">
+          <button aria-hidden="true" class="glue-cookie-notification-bar-control footer-sites-link">
+            Manage cookies
+          </button>
+        </li>
+      </ul>
+    </nav>
+    <nav class="footer-utility-links">
+      <ul class="footer-utility-list">
+        <li class="footer-utility-item">
+          <a href="//developers.google.com/terms/site-terms" class="footer-utility-link">
+            Terms
+          </a>
+        </li>
+        <li class="footer-utility-item">
+          <a href="//policies.google.com/privacy" class="footer-utility-link">
+            Privacy
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+
+        
+				
+
+        
+        <script nonce="Cy2haREoby1D78LJvUmr2w==" src="https://www.youtube.com/player_api"></script>
+        <script nonce="Cy2haREoby1D78LJvUmr2w==" src="//www.gstatic.com/glue/v27_1/glue.min.js"></script>
+        <script nonce="Cy2haREoby1D78LJvUmr2w==" type="text/javascript" src="https://storage.googleapis.com/gweb-developer-goog-blog-cms-assets/site/20260519-162827/js/dgc_blog.js"></script>
+
+        <script nonce="Cy2haREoby1D78LJvUmr2w==" src="https://www.gstatic.com/glue/cookienotificationbar/cookienotificationbar.min.js"
+            data-glue-cookie-notification-bar-category="2A"
+            data-glue-cookie-notification-bar-site-id="developers.googleblog.com"></script>
+
+        
+  <script src="https://storage.googleapis.com/gweb-developer-goog-blog-cms-assets/site/20260519-162827/js/blog_detail.js" nonce="Cy2haREoby1D78LJvUmr2w=="></script>
+  <script src="https://storage.googleapis.com/gweb-developer-goog-blog-cms-assets/site/20260519-162827/js/prism.js" nonce="Cy2haREoby1D78LJvUmr2w=="></script>
+
+    </body>
+</html>

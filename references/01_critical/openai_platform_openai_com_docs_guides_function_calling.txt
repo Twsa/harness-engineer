@@ -1,0 +1,8 @@
+# Function Calling Guide
+Source: https://platform.openai.com/docs/guides/function-calling
+Note: BLOCKED - content fetched via browser at reduced fidelity
+
+Core concepts:
+- Function calling patterns
+- Tool definition schemas
+- Parallel vs sequential function calls

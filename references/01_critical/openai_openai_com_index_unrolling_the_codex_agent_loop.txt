@@ -1,0 +1,57 @@
+# Unrolling the Codex Agent Loop
+Source: https://openai.com/index/unrolling-the-codex-agent-loop
+Date: January 23, 2026
+Author: Michael Bolin
+
+---
+
+## Core Message
+
+Codex CLI is a cross-platform local software agent that produces high-quality, reliable software changes. This post focuses on the Codex harness — the core agent loop and execution logic.
+
+## The Agent Loop
+
+At the heart of every AI agent is the "agent loop." Simplified:
+1. Agent takes user input and prepares a prompt
+2. Query the model via inference (text → tokens → sample → output tokens → text)
+3. Model either produces a final response OR requests a tool call
+4. If tool call: agent executes it, appends output to prompt, re-queries
+5. Repeat until assistant message (termination state)
+
+Multi-turn: conversation history is included in prompt for each new turn. Context window management is critical.
+
+## Building the Prompt
+
+The Responses API takes: instructions (system), tools, input (text/image/file).
+
+Codex prompt order (inserted before user message):
+1. role=developer: sandbox permissions description for shell tool
+2. role=developer: developer_instructions from config.toml
+3. role=user: aggregated user instructions from AGENTS.md, AGENTS.override.md, skills metadata
+4. role=user: environment context (cwd, shell)
+
+Key insight: "prompt caching" enables reuse of computation. Cache hits require exact prefix matches. Static content (instructions, examples) should go at the beginning; variable content at the end.
+
+## Performance: The Quadratic Problem
+
+Without previous_response_id, the prompt grows quadratically. To mitigate:
+- Prompt caching turns sampling from quadratic to linear when cache hits occur
+- Compaction: when context exceeds threshold, replace conversation with a representative summary via /responses/compact endpoint
+
+Cache miss triggers:
+- Changing tools mid-conversation
+- Changing models
+- Changing sandbox config, approval mode, or CWD
+
+Codex handles mid-conversation changes by appending new messages rather than modifying earlier ones.
+
+## Key Design Decisions
+
+1. **Zero Data Retention (ZDR)**: Codex keeps requests fully stateless to support ZDR customers — doesn't use previous_response_id
+2. **Auto-compaction**: Uses /responses/compact endpoint automatically when auto_compact_limit exceeded
+3. **MCP tools ordering**: Must enumerate tools in consistent order to avoid cache misses; MCP servers can change tool lists on the fly via notifications/tools/list_changed
+4. **Permissions sandbox**: Only Codex-provided shell tool is sandboxed; MCP tools enforce their own guardrails
+
+## Termination
+
+Each turn always ends with an assistant message. The agent's "output" is not limited to the assistant message — often the primary output is the code it writes or edits. The assistant message signals termination state in the agent loop.

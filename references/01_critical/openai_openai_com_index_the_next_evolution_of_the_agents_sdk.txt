@@ -1,0 +1,7 @@
+# The Next Evolution of the Agents SDK
+Source: https://openai.com/index/the-next-evolution-of-the-agents-sdk
+Note: BLOCKED - content fetched via browser at reduced fidelity
+
+Core concepts:
+- Evolution of the Agents SDK
+- New features for agent orchestration

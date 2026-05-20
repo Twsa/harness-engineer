@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <title>Claude Code Compaction: How Context Compression Works (2026)</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <link rel="preload" as="style" href="/assets/built/screen.css?v=f27318b963" />
+    <link rel="preload" as="script" href="/assets/built/casper.js?v=f27318b963" />
+
+    <link rel="stylesheet" type="text/css" href="/assets/built/screen.css?v=f27318b963" />
+
+    <meta name="description" content="How Claude Code compaction compresses your conversation. Real examples of custom compaction prompts, what gets lost, and how to keep critical context.">
+    <link rel="icon" href="https://okhlopkov.com/content/images/size/w256h256/2021/07/profile_pic_sq_small.png" type="image/png">
+    <link rel="canonical" href="https://okhlopkov.com/claude-code-compaction-explained/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <meta property="og:site_name" content="Daniil Okhlopkov">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Claude Code Compaction: How Context Compression Works (2026)">
+    <meta property="og:description" content="How Claude Code compaction compresses your conversation. Real examples of custom compaction prompts, what gets lost, and how to keep critical context.">
+    <meta property="og:url" content="https://okhlopkov.com/claude-code-compaction-explained/">
+    <meta property="og:image" content="https://okhlopkov.com/content/images/2026/03/claude-code-compaction-explained.png">
+    <meta property="article:published_time" content="2026-03-31T05:09:27.000Z">
+    <meta property="article:modified_time" content="2026-03-31T05:10:39.000Z">
+    <meta property="article:tag" content="telegram-en">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Claude Code Compaction: How Context Compression Works (2026)">
+    <meta name="twitter:description" content="How Claude Code compaction compresses your conversation. Real examples of custom compaction prompts, what gets lost, and how to keep critical context.">
+    <meta name="twitter:url" content="https://okhlopkov.com/claude-code-compaction-explained/">
+    <meta name="twitter:image" content="https://okhlopkov.com/content/images/2026/03/claude-code-compaction-explained.png">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Daniil Okhlopkov">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="telegram-en">
+    <meta name="twitter:site" content="@danokhlopkov">
+    <meta name="twitter:creator" content="@danokhlopkov">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Daniil Okhlopkov",
+        "url": "https://okhlopkov.com/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://okhlopkov.com/content/images/size/w256h256/2021/07/profile_pic_sq_small.png",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Daniil Okhlopkov",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://okhlopkov.com/content/images/2024/10/Dan-Okhlopkov-LinkedIn.jpeg",
+            "width": 800,
+            "height": 800
+        },
+        "url": "https://okhlopkov.com/author/okhlopkov/",
+        "sameAs": [
+            "https://okhlopkov.com",
+            "https://x.com/danokhlopkov"
+        ]
+    },
+    "headline": "Claude Code Compaction: How Context Compression Works (2026)",
+    "url": "https://okhlopkov.com/claude-code-compaction-explained/",
+    "datePublished": "2026-03-31T05:09:27.000Z",
+    "dateModified": "2026-03-31T05:10:39.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://okhlopkov.com/content/images/2026/03/claude-code-compaction-explained.png",
+        "width": 1200,
+        "height": 630
+    },
+    "keywords": "telegram-en",
+    "description": "There&#x27;s a hidden mechanic in Claude Code that most people don&#x27;t think about until it costs them an hour of work. Compaction is the automatic compression of your conversation context when you approach the token limit. I ran into it when my always-on agent &quot;forgot&quot; a critical rule from the beginning of a session after 200 minutes of continuous operation. Here&#x27;s what I learned by digging into how it works.\n\n\nWhat is compaction and why it exists\n\nClaude Code runs in your terminal and maintains long ",
+    "mainEntityOfPage": "https://okhlopkov.com/claude-code-compaction-explained/"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 6.24">
+    <link rel="alternate" type="application/rss+xml" title="Daniil Okhlopkov" href="https://okhlopkov.com/en/rss/">
+    
+    <script defer src="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/sodo-search.min.js" data-key="4e1ef41b21cf0dcd65ca07f485" data-styles="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/main.css" data-sodo-search="https://okhlopkov.com/" data-locale="en" crossorigin="anonymous" type="e2e5a1fe7f2d3a70f0c0873e-text/javascript"></script>
+    
+    <link href="https://okhlopkov.com/webmentions/receive/" rel="webmention">
+    <script defer src="/public/cards.min.js?v=f27318b963" type="e2e5a1fe7f2d3a70f0c0873e-text/javascript"></script><style>:root {--ghost-accent-color: #fe1f7d;}</style>
+    <link rel="stylesheet" type="text/css" href="/public/cards.min.css?v=f27318b963">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9Z5T725JJD" type="e2e5a1fe7f2d3a70f0c0873e-text/javascript"></script>
+<script type="e2e5a1fe7f2d3a70f0c0873e-text/javascript">
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-9Z5T725JJD');
+</script>
+
+<!-- Yandex.Metrika counter -->
+<script type="e2e5a1fe7f2d3a70f0c0873e-text/javascript">
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(46266270, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/46266270" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  --color-text: #1a1a1a;
+  --color-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-surface: #f9fafb;
+}
+
+#ghost-portal-root,
+.gh-portal-triggerbtn-container,
+.gh-subscribe-form,
+.footer-cta,
+.gh-powered-by,
+a[href="https://ghost.org"],
+a[href="https://ghost.org/"],
+a[href^="#/portal/signup"],
+.pswp { display: none !important; }
+
+body {
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.gh-head-menu a,
+.gh-head-actions a,
+.gh-head-actions button {
+  padding: 12px 14px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+</style>
+
+    <link rel="alternate" hreflang="ru" href="https://okhlopkov.com/claude-code-compaction-kak-rabotaet/" />
+<link rel="alternate" hreflang="en" href="https://okhlopkov.com/claude-code-compaction-explained/" />
+
+</head>
+<body class="post-template tag-telegram-en is-head-left-logo has-cover">
+<div class="viewport">
+
+    <header id="gh-head" class="gh-head outer">
+        <div class="gh-head-inner inner">
+            <div class="gh-head-brand">
+                <a class="gh-head-logo no-image" href="https://okhlopkov.com">
+                        Daniil Okhlopkov
+                </a>
+                <button class="gh-search gh-icon-btn" aria-label="Search this site" data-ghost-search><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>
+                <button class="gh-burger" aria-label="Main Menu"></button>
+            </div>
+
+            <nav class="gh-head-menu">
+                <ul class="nav">
+    <li class="nav-home"><a href="https://okhlopkov.com/">Home</a></li>
+    <li class="nav-ru"><a href="https://okhlopkov.com/tag/telegram/">RU</a></li>
+    <li class="nav-en"><a href="https://okhlopkov.com/tag/telegram-en/">EN </a></li>
+    <li class="nav-cn"><a href="https://okhlopkov.com/tag/telegram-cn/">CN</a></li>
+    <li class="nav-about"><a href="https://okhlopkov.com/about/">About</a></li>
+</ul>
+
+            </nav>
+
+            <div class="gh-head-actions">
+                        <button class="gh-search gh-icon-btn" aria-label="Search this site" data-ghost-search><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>
+            </div>
+        </div>
+    </header>
+
+    <div class="site-content">
+        
+
+
+
+<main id="site-main" class="site-main">
+<article class="article post tag-telegram-en ">
+
+    <header class="article-header gh-canvas">
+
+        <div class="article-tag post-card-tags">
+                <span class="post-card-primary-tag">
+                    <a href="/tag/telegram-en/">telegram-en</a>
+                </span>
+        </div>
+
+        <h1 class="article-title">Claude Code Compaction: How Context Compression Actually Works</h1>
+
+
+        <div class="article-byline">
+        <section class="article-byline-content">
+
+            <ul class="author-list instapaper_ignore">
+                <li class="author-list-item">
+                    <a href="/author/okhlopkov/" class="author-avatar" aria-label="Read more of Daniil Okhlopkov">
+                        <img class="author-profile-image" src="/content/images/size/w100/2024/10/Dan-Okhlopkov-LinkedIn.jpeg" alt="Daniil Okhlopkov" />
+                    </a>
+                </li>
+            </ul>
+
+            <div class="article-byline-meta">
+                <h4 class="author-name"><a href="/author/okhlopkov/">Daniil Okhlopkov</a></h4>
+                <div class="byline-meta-content">
+                    <time class="byline-meta-date" datetime="2026-03-31">31 Mar 2026</time>
+                        <span class="byline-reading-time"><span class="bull">&bull;</span> 4 min read</span>
+                </div>
+            </div>
+
+        </section>
+        </div>
+
+            <figure class="article-image">
+                <img
+                    srcset="/content/images/size/w300/2026/03/claude-code-compaction-explained.png 300w,
+                            /content/images/size/w600/2026/03/claude-code-compaction-explained.png 600w,
+                            /content/images/size/w1000/2026/03/claude-code-compaction-explained.png 1000w,
+                            /content/images/size/w2000/2026/03/claude-code-compaction-explained.png 2000w"
+                    sizes="(min-width: 1400px) 1400px, 92vw"
+                    src="/content/images/size/w2000/2026/03/claude-code-compaction-explained.png"
+                    alt="Claude Code Compaction: How Context Compression Actually Works"
+                />
+            </figure>
+
+    </header>
+
+    <section class="gh-content gh-canvas">
+        <p>There's a hidden mechanic in Claude Code that most people don't think about until it costs them an hour of work. Compaction is the automatic compression of your conversation context when you approach the token limit. I ran into it when my always-on agent "forgot" a critical rule from the beginning of a session after 200 minutes of continuous operation. Here's what I learned by digging into how it works.</p><h2 id="what-is-compaction-and-why-it-exists">What is compaction and why it exists</h2><p>Claude Code runs in your terminal and maintains long sessions. Unlike ChatGPT where each message is a separate request, Claude Code accumulates context: files it read, commands it executed, grep results, diffs, error messages. All of this stacks into one massive prompt.</p><p>The problem: models have context window limits. Claude Sonnet has 200K tokens, Opus goes up to 1M. But even a million tokens runs out when your agent is actively working through a codebase. Compaction kicks in when context reaches roughly 95% of the limit.</p><p>What happens: Claude Code takes the entire conversation history, sends it to a separate model call with a prompt like "compress this into key facts," and replaces the full history with a condensed summary. You don't see this happening — at some point, the agent starts working from "memory" of past interactions rather than the full transcript.</p><h2 id="what-survives-compaction-what-doesnt">What survives compaction, what doesn't</h2><p>From my experience running agents daily, compaction reliably preserves:</p><ul><li>The current task and its immediate context</li><li>File names that were recently modified</li><li>Recent errors and their solutions</li><li>General project architecture</li></ul><p>What consistently gets lost:</p><ul><li>Instructions from the start of the session — "don't touch this file," "use this format"</li><li>Intermediate decisions — why you chose approach A over B</li><li>Specific code snippets discussed 50 messages ago</li><li>Subtle style rules — "no emoji," "no Co-Authored-By in commits"</li></ul><p>This makes sense: compaction optimizes for "what to do next," not "why we did what we did." Decision context is the first casualty of compression.</p><h2 id="custom-compaction-prompts">Custom compaction prompts</h2><p>Claude Code lets you override the compaction prompt. This might be the most underrated setting. In <code>settings.json</code> (at <code>~/.claude/settings.json</code>), there's a parameter:</p><pre><code>{
+  "compactPrompt": "Preserve ALL rules from CLAUDE.md verbatim. Keep file paths, error messages, and architectural decisions. Summarize tool outputs but keep their conclusions."
+}</code></pre><p>I've tested multiple variations. The default prompt is a generic "summarize the conversation." It works fine for short sessions, but for agents running for hours, you need more precision.</p><p>My current compaction prompt:</p><pre><code>{
+  "compactPrompt": "When compacting, you MUST preserve:\n1. All rules and constraints from CLAUDE.md and system prompt — copy them verbatim\n2. Current task context and progress\n3. File paths that were modified\n4. Specific error messages and their solutions\n5. User corrections and preferences stated during the session\n\nYou MAY summarize:\n- Tool call outputs (keep conclusions, drop raw output)\n- File contents that were read (keep what was learned, drop the text)\n- Exploratory steps that led nowhere"
+}</code></pre><p>The difference is noticeable. After switching to this custom prompt, my agents stopped "forgetting" CLAUDE.md rules during long sessions.</p><h2 id="claudemd-vs-compaction-where-to-put-what">CLAUDE.md vs compaction: where to put what</h2><p>The key insight from three months of running Claude Code agents: <strong>never rely on compaction for critical rules</strong>. Everything the agent must always remember should live in CLAUDE.md.</p><p>CLAUDE.md loads as part of the system prompt at the start of every session. Compaction doesn't touch it — it exists outside the conversation history. It's the only place that's guaranteed to survive any compression.</p><p>My strategy:</p><ul><li><strong>CLAUDE.md</strong> — architectural rules, code style, prohibitions, credential paths, naming conventions. Anything that applies to every session</li><li><strong>Conversation context</strong> — current task, intermediate results, discussions. It's OK to lose this during compaction</li><li><strong>Project files</strong> — TODO.md, ARCHITECTURE.md, notes. The agent can re-read these if compaction erased the context</li></ul><p>Rule of thumb: if you catch yourself repeating the same instruction to the agent — move it to CLAUDE.md. I covered CLAUDE.md configuration in detail in my <a href="https://okhlopkov.com/claude-code-setup-mcp-hooks-skills-2026/">Claude Code setup guide</a>.</p><h2 id="how-to-tell-when-compaction-happened">How to tell when compaction happened</h2><p>Claude Code shows a <code>[context compacted]</code> indicator in the terminal. But if you're multitasking, it's easy to miss. A more reliable signal: watch the cost counter in the bottom-right corner. A sudden cost spike (compaction is a separate API call) plus a context counter reset means compaction just fired.</p><p>Another telltale sign: the agent starts re-asking things you already discussed. "Which file has the config?" — even though you edited that file 20 minutes ago. That's a clear signal that context was compressed and details were lost.</p><h2 id="when-compaction-causes-real-problems">When compaction causes real problems</h2><p>A concrete case from my work. I run a <a href="https://okhlopkov.com/en-ai-agents-practice-claude-code-voice-commands/">server-agent</a> — Claude Code running 24/7 on a VPS, accessible via Telegram. The agent receives a message, processes it, waits for the next one. Sessions can last hours.</p><p>The problem: after compaction, the agent would "forget" access control rules. I have a permission matrix — which files can be read from which chat context. These rules were in the initial prompt, but after compression the model lost them and started responding to requests it should have blocked.</p><p>The fix: I moved all security rules into CLAUDE.local.md (which loads on top of the base CLAUDE.md). Now they're in the system prompt, not in the conversation history — compaction can't touch them.</p><h2 id="practical-tips-for-managing-compaction">Practical tips for managing compaction</h2><p><strong>Customize your compactPrompt.</strong> Tailor it to your workflow. Working with data? Ask it to preserve SQL queries. Writing articles? Ask it to keep style rules. The default is too generic for specialized work.</p><p><strong>Keep sessions short when possible.</strong> A fresh session means clean context plus full CLAUDE.md. Sometimes that's better than a long session with two compaction events. I've found that breaking work into focused 30-60 minute sessions produces better results than marathon 4-hour runs.</p><p><strong>Use files as external memory.</strong> Ask the agent to write key decisions to a TODO.md or NOTES.md file in your project. After compaction, it can re-read them. This pattern is especially important for <a href="https://okhlopkov.com/second-brain-obsidian-claude-code/">Obsidian-based workflows</a> where the vault acts as long-term memory.</p><p><strong>Put everything critical in CLAUDE.md.</strong> Rules that must always apply go there, nowhere else. Don't hope that compaction will preserve them — assume it won't.</p><p><strong>Test compaction intentionally.</strong> Run a long session, wait for compression, then check — does the agent still remember the rules from the beginning? This will save you hours of debugging later.</p><p>Compaction isn't a bug — it's a necessary compromise. Context windows are growing, but as long as they're finite, compression will be part of working with AI agents. Better to understand how it works than to be surprised when your agent "forgets" a critical rule at the 200-minute mark.</p><hr><p>Follow me on <a href="https://x.com/danokhlopkov?ref=okhlopkov.com">Twitter/X @danokhlopkov</a> for more on AI agents and automation.</p>
+    </section>
+
+
+</article>
+</main>
+
+
+
+
+            <aside class="read-more-wrap outer">
+                <div class="read-more inner">
+                        
+<article class="post-card post">
+
+    <a class="post-card-image-link" href="/always-on-ai-agent-server-setup/">
+
+        <img class="post-card-image"
+            srcset="/content/images/size/w300/2026/03/always-on-ai-agent-server-setup.png 300w,
+                    /content/images/size/w600/2026/03/always-on-ai-agent-server-setup.png 600w,
+                    /content/images/size/w1000/2026/03/always-on-ai-agent-server-setup.png 1000w,
+                    /content/images/size/w2000/2026/03/always-on-ai-agent-server-setup.png 2000w"
+            sizes="(max-width: 1000px) 400px, 800px"
+            src="/content/images/size/w600/2026/03/always-on-ai-agent-server-setup.png"
+            alt="Always-On AI Agent: Running Claude Code 24/7 on a Server"
+            loading="lazy"
+        />
+
+
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="/always-on-ai-agent-server-setup/">
+            <header class="post-card-header">
+                <div class="post-card-tags">
+                </div>
+                <h2 class="post-card-title">
+                    Always-On AI Agent: Running Claude Code 24/7 on a Server
+                </h2>
+            </header>
+                <div class="post-card-excerpt">I have an AI agent running on a server 24/7 without my involvement. It reads my Telegram DMs, replies to messages, monitors channels, runs scheduled tasks, and can restart itself. Here&#39;s the architecture behind it.
+
+
+Why an always-on agent
+
+Claude Code in the terminal is powerful. But</div>
+        </a>
+
+        <footer class="post-card-meta">
+            <time class="post-card-meta-date" datetime="2026-03-31">31 Mar 2026</time>
+                <span class="post-card-meta-length">4 min read</span>
+        </footer>
+
+    </div>
+
+</article>
+                        
+<article class="post-card post">
+
+    <a class="post-card-image-link" href="/ai-agent-na-servere-24-7/">
+
+        <img class="post-card-image"
+            srcset="/content/images/size/w300/2026/03/ai-agent-na-servere-24-7.png 300w,
+                    /content/images/size/w600/2026/03/ai-agent-na-servere-24-7.png 600w,
+                    /content/images/size/w1000/2026/03/ai-agent-na-servere-24-7.png 1000w,
+                    /content/images/size/w2000/2026/03/ai-agent-na-servere-24-7.png 2000w"
+            sizes="(max-width: 1000px) 400px, 800px"
+            src="/content/images/size/w600/2026/03/ai-agent-na-servere-24-7.png"
+            alt="AI-агент на сервере 24/7: как я запустил Claude Code на VPS"
+            loading="lazy"
+        />
+
+
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="/ai-agent-na-servere-24-7/">
+            <header class="post-card-header">
+                <div class="post-card-tags">
+                </div>
+                <h2 class="post-card-title">
+                    AI-агент на сервере 24/7: как я запустил Claude Code на VPS
+                </h2>
+            </header>
+                <div class="post-card-excerpt">У меня на сервере крутится AI-агент, который работает 24/7 без моего участия. Он читает мои Telegram DM, отвечает на сообщения, мониторит каналы, запускает cron-задачи и может сам себя перезапустить. Расскажу архитектуру, которая за этим стоит.
+
+
+Концепция: зачем always-on агент
+
+Claude Code в терминале — мощная штука. Но ты закрыл ноутбук</div>
+        </a>
+
+        <footer class="post-card-meta">
+            <time class="post-card-meta-date" datetime="2026-03-31">31 Mar 2026</time>
+                <span class="post-card-meta-length">4 min read</span>
+        </footer>
+
+    </div>
+
+</article>
+                        
+<article class="post-card post">
+
+    <a class="post-card-image-link" href="/telegram-mcp-server-guide/">
+
+        <img class="post-card-image"
+            srcset="/content/images/size/w300/2026/03/telegram-mcp-server-guide.png 300w,
+                    /content/images/size/w600/2026/03/telegram-mcp-server-guide.png 600w,
+                    /content/images/size/w1000/2026/03/telegram-mcp-server-guide.png 1000w,
+                    /content/images/size/w2000/2026/03/telegram-mcp-server-guide.png 2000w"
+            sizes="(max-width: 1000px) 400px, 800px"
+            src="/content/images/size/w600/2026/03/telegram-mcp-server-guide.png"
+            alt="Build a Telegram MCP Server for Claude Code: Complete Guide"
+            loading="lazy"
+        />
+
+
+    </a>
+
+    <div class="post-card-content">
+
+        <a class="post-card-content-link" href="/telegram-mcp-server-guide/">
+            <header class="post-card-header">
+                <div class="post-card-tags">
+                </div>
+                <h2 class="post-card-title">
+                    Build a Telegram MCP Server for Claude Code: Complete Guide
+                </h2>
+            </header>
+                <div class="post-card-excerpt">I have an AI agent that sits in Telegram 24/7, reads my chats, replies to messages, and manages contacts. All of this runs through an MCP Server that wraps Telethon into a set of tools for Claude Code. Here&#39;s how it works and how to build one</div>
+        </a>
+
+        <footer class="post-card-meta">
+            <time class="post-card-meta-date" datetime="2026-03-31">31 Mar 2026</time>
+                <span class="post-card-meta-length">4 min read</span>
+        </footer>
+
+    </div>
+
+</article>
+                </div>
+            </aside>
+
+
+
+    </div>
+
+    <footer class="site-footer outer">
+        <div class="inner">
+            <section class="copyright"><a href="https://okhlopkov.com">Daniil Okhlopkov</a> &copy; 2026</section>
+            <nav class="site-footer-nav">
+                
+            </nav>
+            <div class="gh-powered-by"><a href="https://ghost.org/" target="_blank" rel="noopener">Powered by Ghost</a></div>
+        </div>
+    </footer>
+
+</div>
+
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="pswp__bg"></div>
+
+    <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous" type="e2e5a1fe7f2d3a70f0c0873e-text/javascript">
+</script>
+<script src="/assets/built/casper.js?v=f27318b963" type="e2e5a1fe7f2d3a70f0c0873e-text/javascript"></script>
+<script type="e2e5a1fe7f2d3a70f0c0873e-text/javascript">
+$(document).ready(function () {
+    // Mobile Menu Trigger
+    $('.gh-burger').click(function () {
+        $('body').toggleClass('gh-head-open');
+    });
+    // FitVids - Makes video embeds responsive
+    $(".gh-content").fitVids();
+});
+</script>
+
+
+
+<script src="/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="e2e5a1fe7f2d3a70f0c0873e-|49" defer></script></body>
+</html>

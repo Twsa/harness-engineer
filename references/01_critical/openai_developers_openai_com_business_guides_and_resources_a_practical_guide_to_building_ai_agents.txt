@@ -1,0 +1,10 @@
+# A Practical Guide to Building AI Agents
+Source: https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents
+Note: BLOCKED - content fetched via browser at reduced fidelity
+
+Core concepts covered:
+- AI agents defined: perceive, decide, act loops
+- Tool use and function calling
+- Planning and reasoning capabilities
+- Multi-agent collaboration patterns
+- Evaluation and measurement frameworks

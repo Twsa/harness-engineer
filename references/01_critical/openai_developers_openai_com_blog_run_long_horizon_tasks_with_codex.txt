@@ -1,0 +1,72 @@
+# Run Long Horizon Tasks with Codex
+Source: https://developers.openai.com/blog/run-long-horizon-tasks-with-codex
+Date: February 23, 2026
+Author: Derrick Choi
+
+---
+
+## Core Message
+
+GPT-5.3-Codex can run 25 hours uninterrupted, 13M tokens, 30k lines of code. The real shift is time horizon — agents staying coherent for longer, not just one-shot intelligence.
+
+## Key Insight: Time Horizon
+
+The practical change: agents can stay coherent for longer, complete larger chunks of work end-to-end, and recover from errors without losing the thread.
+
+METR's work: the length of software tasks frontier agents can complete with ~50% and ~80% reliability has been climbing fast, with a rough ~7 month doubling time.
+
+GPT-5.3-Codex improvements:
+1. Better at multi-step execution (plan → implement → validate → repair)
+2. Easier to steer mid-flight without resetting the whole run
+
+## Why Codex Stays Coherent on Long Tasks
+
+Long-running work is less about one giant prompt and more about the agent loop:
+
+Plan → Edit code → Run tools (tests/build/lint) → Observe results → Repair failures → Update docs/status → Repeat
+
+This loop gives the agent:
+- Real feedback (errors, diffs, logs)
+- Externalized state (repo, files, docs, worktrees, outputs)
+- Steerability over time (course-correct based on outcomes)
+
+The harness supplies structured context (repo metadata, file tree, diffs, command outputs) and enforces a disciplined "done when" routine.
+
+## Key Technique: Durable Project Memory
+
+The most important technique was durable project memory — writing spec, plan, constraints, and status in markdown files the agent could revisit repeatedly.
+
+File stack:
+1. **Prompt.md** (spec + deliverables): Freeze the target. Sections: Goals + non-goals, Hard constraints, Deliverables, "Done when"
+2. **Plan.md** (milestones + validations): Turn open-ended work into a sequence of checkpoints. Sections: Milestones small enough to complete in one loop, Acceptance criteria + validation commands per milestone, Stop-and-fix rule, Decision notes
+3. **Implement.md** (execution instructions): Runbook for how the agent operates. Sections: Plans markdown file is source of truth, Run validation after each milestone, Keep diffs scoped, Update documentation continuously
+4. **Documentation.md** (status + decisions): Shared memory and audit log. Sections: Current milestone status, Decisions made, How to run + demo, Known issues
+
+## Verification at Every Milestone
+
+Codex ran verification commands after milestones and repaired failures before continuing. Quality commands included tests, lint, typecheck, and build verification.
+
+## What the Agent Built
+
+High-level capabilities implemented:
+- Canvas editing (frames, groups, shapes, text, images/icons, buttons, charts)
+- Live collaboration (presence, cursors, selections, edits sync across tabs)
+- Inspector controls (geometry, styling, text)
+- Layers management (search, rename, lock/hide, reorder)
+- Guides/alignment/snapping
+- History snapshots + restore
+- Replay timeline + branch from a prior point
+- Prototype mode (hotspots + flow navigation)
+- Comments (pinned threads with resolve/reopen)
+- Export (save/import/export + CLI export to JSON and React + Tailwind)
+
+## Takeaways for Long-Horizon Codex Tasks
+
+What made the 25-hour run work:
+1. A clear target and constraints (spec file)
+2. Checkpointed milestones with acceptance criteria (plans.md)
+3. A runbook for how the agent should operate (implement.md)
+4. Continuous verification (tests/lint/typecheck/build)
+5. A live status/audit log (documentation.md)
+
+The direction is clear: less babysitting, more delegation with guardrails. Stronger teammate behavior, tighter integration with real context, and guardrails that keep work reliable, reviewable, and easy to ship.

@@ -1,0 +1,8 @@
+# Unlocking the Codex Harness
+Source: https://openai.com/index/unlocking-the-codex-harness
+Note: BLOCKED - content fetched via browser at reduced fidelity
+
+Core concepts:
+- Codex harness design philosophy
+- How the harness enables reliable agentic coding
+- Tool access and sandboxing mechanisms
